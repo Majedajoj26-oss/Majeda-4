@@ -1,4 +1,9 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>رحلة في حياة الرسول</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -366,6 +371,9 @@ body.little .opt{font-size:1.3rem;padding:16px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:420px){.node{width:70px;height:70px}.node svg{width:36px;height:36px}.label b{font-size:1.12rem}.stop.current .node{width:92px;height:92px}.stop.current .node>svg{width:46px;height:46px}.stop.current .label b{font-size:1.3rem}.achI{padding-inline:2px}.achT{width:100%}}
 </style>
+</head>
+<body>
+
 
 <div class="wrap" dir="rtl">
   <header class="hero" data-pane="journey">
@@ -739,6 +747,7 @@ function showQ(){
 function showGift(){
   stopSpeak();const d=DATA[cur],stars=Math.min(3,Math.max(1,firstTry)),prev=S.done[cur]?.stars||0,newCard=COMP.find(c=>c.st===cur&&!S.done[cur]);
   setSteps(TOTAL()-1,TOTAL());
+  if(!S.done[cur]){track('station-'+(cur+1)+'-done','أنهى محطة: '+d.t);if(cur===DATA.length-1)track('certificate','حصل على الشهادة')}
   S.done[cur]={stars:Math.max(stars,prev),gift:S.done[cur]?.gift||0};save();
   const isLast=cur===DATA.length-1;
   $('sBody').innerHTML=`<div class="gift"><h3 style="font-size:1.5rem">صندوق الهدايا ينتظرك!</h3><p style="margin:0;color:var(--muted)">اضغط على الصندوق لتفتحه</p>
@@ -764,6 +773,7 @@ function showGift(){
   else $('toNext').onclick=()=>openStation(cur+1);
 }
 const pick=a=>a[Math.floor(Math.random()*a.length)];
+function track(path,title){try{window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path:path,title:title,event:true})}catch(e){}}
 
 /* ===== secret message ===== */
 const SECRET=[
@@ -1208,4 +1218,6 @@ setLevel(S.level||'big');showTab('journey');
 document.fonts?.ready.then(()=>requestAnimationFrame(drawPath));
 </script>
 
-</body></html>
+<script data-goatcounter="https://majeda.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
