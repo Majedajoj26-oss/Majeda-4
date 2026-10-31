@@ -1001,7 +1001,7 @@ function showSecret(){
     if(readMode)speak('خلق اليوم: '+k+'. '+d.lesson+'. كيف أطبقه؟ '+ex)};
   $('promise').onclick=e=>{if(S.promises[i])return;S.promises[i]=1;save();e.currentTarget.textContent='زرعتَ بذرتها في واحتك ✓';S.garden[i]=S.garden[i]||{g:0};renderOasis();e.currentTarget.classList.add('kept');burst(e.currentTarget,30);chime(true,true)};
   if(S.promises[i])$('promise').classList.add('kept');
-  $('back').onclick=()=>{phase=d.story.length-1;$('sMedia').hidden=false;showStory()};
+  $('back').onclick=()=>{phase=d.story.length-1;renderMedia();showStory()};
   $('toQ').onclick=()=>showHadith();
 }
 
@@ -1043,7 +1043,7 @@ function renderOasis(){
 /* ===== media: read-aloud, parent audio, YouTube ===== */
 S.links=S.links||{};
 let readMode=false,arVoice=null;
-const canSpeak='speechSynthesis' in window;
+const canSpeak=false; // read-aloud paused for now; station videos will replace it
 function pickVoice(){if(!canSpeak)return;const v=speechSynthesis.getVoices();arVoice=v.find(x=>/^ar[-_]SA/i.test(x.lang))||v.find(x=>/^ar/i.test(x.lang))||null}
 if(canSpeak){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
 const speechText=t=>t.replace(/ﷺ/g,'صلّى الله عليه وسلّم').replace(/[﴿﴾«»]/g,'');
@@ -1054,19 +1054,13 @@ const ytSearch=d=>'https://www.youtube.com/results?search_query='+encodeURICompo
 const safeUrl=u=>/^https:\/\//i.test(u||'')?u:'';
 const ICO_SPK='<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
 const ICO_YT='<svg viewBox="0 0 24 24"><path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.6 12 5.6 12 5.6s-6 0-7.9.5A3 3 0 0 0 2 8.2 31 31 0 0 0 1.6 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2.1 2.1c1.9.5 7.9.5 7.9.5s6 0 7.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .4-3.8 31 31 0 0 0-.4-3.8z"/><path d="M10 15.2V8.8l5.5 3.2z" fill="#fff"/></svg>';
-async function renderMedia(){
-  const d=DATA[cur],m=$('sMedia'),i=cur;m.hidden=false;
-  const link=safeUrl(S.links[i])||ytSearch(d);
-  m.innerHTML=`${canSpeak?`<button class="mbtn" id="ttsBtn">${ICO_SPK}<span>اقرأ لي القصة</span></button>`:''}
-    <a class="mbtn yt" href="${link}" target="_blank" rel="noopener">${ICO_YT}<span>شاهد فيديو عن القصة</span></a>
-    <p class="mnote" id="ttsNote" hidden>لم يجد الجهاز صوتًا عربيًا للقراءة. يمكن إضافة اللغة العربية من إعدادات الجهاز، أو قراءة القصة مع أحد الوالدين.</p>
-    <div id="sAudioBox" style="width:100%" hidden></div>`;
-  if(canSpeak)$('ttsBtn').onclick=()=>{readMode=!readMode;$('ttsBtn').classList.toggle('on',readMode);$('ttsBtn').lastChild.textContent=readMode?'إيقاف القراءة':'اقرأ لي القصة';
-    if(readMode){if(!arVoice&&speechSynthesis.getVoices().length)$('ttsNote').hidden=false;speak(d.story[phase])}else stopSpeak()};
-  const blob=await getAudio(i);
-  if(blob&&cur===i&&!$('sheet').hidden){const box=$('sAudioBox');box.hidden=false;
-    box.innerHTML=`<span class="mlabel">حكاية مسجّلة لهذه المحطة</span><audio id="sAudio" controls preload="metadata" src="${URL.createObjectURL(blob)}"></audio>`;
-    $('sAudio').onplay=()=>{if(readMode){readMode=false;stopSpeak();const b=$('ttsBtn');if(b){b.classList.remove('on');b.lastChild.textContent='اقرأ لي القصة'}}}}
+/* Station videos: put each station's own YouTube link here when it is ready, e.g. 0:'https://youtu.be/xxxx' */
+const VIDEOS={};
+function renderMedia(){
+  const m=$('sMedia'),v=safeUrl(VIDEOS[cur]);
+  if(!v){m.hidden=true;m.innerHTML='';return}
+  m.hidden=false;
+  m.innerHTML=`<a class="mbtn yt" href="${v}" target="_blank" rel="noopener">${ICO_YT}<span>شاهد فيديو المحطة</span></a>`;
 }
 
 /* IndexedDB for parent recordings (this device only) */
